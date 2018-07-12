@@ -1,0 +1,10 @@
+net: "./yolotrain.prototxt"
+
+momentum = 0.9
+weight_decay = 0.0005
+base_lr = 0.001
+max_iter = 500200
+lr_policy = "step"
+stepvalue = 400000, 450000
+
+solver_mode: GPU

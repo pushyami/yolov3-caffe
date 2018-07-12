@@ -1,0 +1,2407 @@
+input: "data"
+	input_shape {
+		dim: 1		# batch size of one because we want to feed a single image into it
+		dim: 3		# 3 color channels (RGB)
+		dim: 256	# height
+		dim: 256	# width
+	}
+
+###################################################
+
+
+# CONVOLUTIONAL LAYER 1
+
+layer{
+	name: "conv1"
+	type: "Convolution"
+	bottom: "data"
+	top: "conv1"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 32 
+		pad: 1
+		kernel_size: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER
+
+layer {
+	name: "relu1"
+	type: "ReLU"
+	bottom: "conv1"
+	top: "conv1"
+}
+
+
+####################################################
+
+
+# CONVOLUTIONAL LAYER 2
+
+layer{
+	name: "conv2"
+	type: "Convolution"
+	bottom: "conv1"
+	top: "conv2"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 64 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3
+		stride: 2 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER
+
+layer {
+	name: "relu2"
+	type: "ReLU"
+	bottom: "conv2"
+	top: "conv2"
+}
+
+
+#####################################################
+
+
+# LAYER 3 (1 * CONVOLUTIONAL + CONVOLUTIONAL + RESIDUAL)
+
+
+# CONVOLUTIONAL LAYER 1 (1)
+
+layer{
+	name: "conv311"
+	type: "Convolution"
+	bottom: "conv2"
+	top: "conv311"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 32 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (1)
+
+layer {
+	name: "relu311"
+	type: "ReLU"
+	bottom: "conv311"
+	top: "conv311"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (1)
+
+layer{
+	name: "conv321"
+	type: "Convolution"
+	bottom: "conv311"
+	top: "conv321"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 64 
+		#pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (1)
+
+layer {
+	name: "relu321"
+	type: "ReLU"
+	bottom: "conv321"
+	top: "conv321"
+}
+
+
+# RESIDUAL LAYER (1)
+
+layer {
+	bottom: "conv2"
+	bottom: "conv321"
+	top: "res31"
+	name: "res31"
+	type: "Eltwise"
+}
+
+
+#####################################################
+
+# CONVOLUTIONAL LAYER 4
+
+layer{
+	name: "conv4"
+	type: "Convolution"
+	bottom: "res31"
+	top: "conv4"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3
+		stride: 2 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER
+
+layer {
+	name: "relu4"
+	type: "ReLU"
+	bottom: "conv4"
+	top: "conv4"
+}
+
+
+#####################################################
+
+
+# LAYER 5 (2 * CONVOLUTIONAL + CONVOLUTIONAL + RESIDUAL)
+
+
+# CONVOLUTIONAL LAYER 1 (1)
+
+layer{
+	name: "conv511"
+	type: "Convolution"
+	bottom: "conv4"
+	top: "conv511"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 64 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (1)
+
+layer {
+	name: "relu511"
+	type: "ReLU"
+	bottom: "conv511"
+	top: "conv511"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (1)
+
+layer{
+	name: "conv521"
+	type: "Convolution"
+	bottom: "conv511"
+	top: "conv521"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (1)
+
+layer {
+	name: "relu521"
+	type: "ReLU"
+	bottom: "conv521"
+	top: "conv521"
+}
+
+
+# RESIDUAL LAYER (1)
+
+layer {
+	bottom: "conv4"
+	bottom: "conv521"
+	top: "res51"
+	name: "res51"
+	type: "Eltwise"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (2)
+
+layer{
+	name: "conv512"
+	type: "Convolution"
+	bottom: "res51"
+	top: "conv512"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 64 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (2)
+
+layer {
+	name: "relu512"
+	type: "ReLU"
+	bottom: "conv512"
+	top: "conv512"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (2)
+
+layer{
+	name: "conv522"
+	type: "Convolution"
+	bottom: "conv512"
+	top: "conv522"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (2)
+
+layer {
+	name: "relu522"
+	type: "ReLU"
+	bottom: "conv522"
+	top: "conv522"
+}
+
+
+# RESIDUAL LAYER (2)
+
+layer {
+	bottom: "res51"
+	bottom: "conv522"
+	top: "res52"
+	name: "res52"
+	type: "Eltwise"
+}
+
+#####################################################
+
+
+# CONVOLUTIONAL LAYER 6
+
+layer{
+	name: "conv6"
+	type: "Convolution"
+	bottom: "res52"
+	top: "conv6"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3
+		stride: 2 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER
+
+layer {
+	name: "relu6"
+	type: "ReLU"
+	bottom: "conv6"
+	top: "conv6"
+}
+
+
+#####################################################
+
+
+# LAYER 7 (8 * CONVOLUTIONAL + CONVOLUTIONAL + RESIDUAL)
+
+
+# CONVOLUTIONAL LAYER 1 (1)
+
+layer{
+	name: "conv711"
+	type: "Convolution"
+	bottom: "conv6"
+	top: "conv711"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (1)
+
+layer {
+	name: "relu711"
+	type: "ReLU"
+	bottom: "conv711"
+	top: "conv711"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (1)
+
+layer{
+	name: "conv721"
+	type: "Convolution"
+	bottom: "conv711"
+	top: "conv721"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (1)
+
+layer {
+	name: "relu721"
+	type: "ReLU"
+	bottom: "conv721"
+	top: "conv721"
+}
+
+
+# RESIDUAL LAYER (1)
+
+layer {
+	bottom: "conv6"
+	bottom: "conv721"
+	top: "res71"
+	name: "res71"
+	type: "Eltwise"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (2)
+
+layer{
+	name: "conv712"
+	type: "Convolution"
+	bottom: "res71"
+	top: "conv712"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (2)
+
+layer {
+	name: "relu712"
+	type: "ReLU"
+	bottom: "conv712"
+	top: "conv712"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (2)
+
+layer{
+	name: "conv722"
+	type: "Convolution"
+	bottom: "conv712"
+	top: "conv722"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (2)
+
+layer {
+	name: "relu722"
+	type: "ReLU"
+	bottom: "conv722"
+	top: "conv722"
+}
+
+
+# RESIDUAL LAYER (2)
+
+layer {
+	bottom: "res71"
+	bottom: "conv722"
+	top: "res72"
+	name: "res72"
+	type: "Eltwise"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (3)
+
+layer{
+	name: "conv713"
+	type: "Convolution"
+	bottom: "res72"
+	top: "conv713"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (3)
+
+layer {
+	name: "relu713"
+	type: "ReLU"
+	bottom: "conv713"
+	top: "conv713"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (3)
+
+layer{
+	name: "conv723"
+	type: "Convolution"
+	bottom: "conv713"
+	top: "conv723"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (3)
+
+layer {
+	name: "relu723"
+	type: "ReLU"
+	bottom: "conv723"
+	top: "conv723"
+}
+
+
+# RESIDUAL LAYER (3)
+
+layer {
+	bottom: "res72"
+	bottom: "conv723"
+	top: "res73"
+	name: "res73"
+	type: "Eltwise"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (4)
+
+layer{
+	name: "conv714"
+	type: "Convolution"
+	bottom: "res73"
+	top: "conv714"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (4)
+
+layer {
+	name: "relu714"
+	type: "ReLU"
+	bottom: "conv714"
+	top: "conv714"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (4)
+
+layer{
+	name: "conv724"
+	type: "Convolution"
+	bottom: "conv714"
+	top: "conv724"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+	name: "relu724"
+	type: "ReLU"
+	bottom: "conv724"
+	top: "conv724"
+}
+
+
+# RESIDUAL LAYER (4)
+
+layer {
+	bottom: "res73"
+	bottom: "conv724"
+	top: "res74"
+	name: "res74"
+	type: "Eltwise"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (5)
+
+layer{
+	name: "conv715"
+	type: "Convolution"
+	bottom: "res74"
+	top: "conv715"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (5)
+
+layer {
+	name: "relu715"
+	type: "ReLU"
+	bottom: "conv715"
+	top: "conv715"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (5)
+
+layer{
+	name: "conv725"
+	type: "Convolution"
+	bottom: "conv715"
+	top: "conv725"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (5)
+
+layer {
+	name: "relu725"
+	type: "ReLU"
+	bottom: "conv725"
+	top: "conv725"
+}
+
+
+# RESIDUAL LAYER (5)
+
+layer {
+	bottom: "res74"
+	bottom: "conv725"
+	top: "res75"
+	name: "res75"
+	type: "Eltwise"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (6)
+
+layer{
+	name: "conv716"
+	type: "Convolution"
+	bottom: "res75"
+	top: "conv716"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (6)
+
+layer {
+	name: "relu716"
+	type: "ReLU"
+	bottom: "conv716"
+	top: "conv716"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (6)
+
+layer{
+	name: "conv726"
+	type: "Convolution"
+	bottom: "conv716"
+	top: "conv726"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (6)
+
+layer {
+	name: "relu726"
+	type: "ReLU"
+	bottom: "conv726"
+	top: "conv726"
+}
+
+
+# RESIDUAL LAYER (6)
+
+layer {
+	bottom: "res75"
+	bottom: "conv726"
+	top: "res76"
+	name: "res76"
+	type: "Eltwise"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (7)
+
+layer{
+	name: "conv717"
+	type: "Convolution"
+	bottom: "res76"
+	top: "conv717"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (7)
+
+layer {
+	name: "relu717"
+	type: "ReLU"
+	bottom: "conv717"
+	top: "conv717"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (7)
+
+layer{
+	name: "conv727"
+	type: "Convolution"
+	bottom: "conv717"
+	top: "conv727"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (7)
+
+layer {
+	name: "relu727"
+	type: "ReLU"
+	bottom: "conv727"
+	top: "conv727"
+}
+
+
+# RESIDUAL LAYER (7)
+
+layer {
+	bottom: "res76"
+	bottom: "conv727"
+	top: "res77"
+	name: "res77"
+	type: "Eltwise"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (8)
+
+layer{
+	name: "conv718"
+	type: "Convolution"
+	bottom: "res77"
+	top: "conv718"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (8)
+
+layer {
+	name: "relu718"
+	type: "ReLU"
+	bottom: "conv718"
+	top: "conv718"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (8)
+
+layer{
+	name: "conv728"
+	type: "Convolution"
+	bottom: "conv718"
+	top: "conv728"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (8)
+
+layer {
+	name: "relu728"
+	type: "ReLU"
+	bottom: "conv728"
+	top: "conv728"
+}
+
+
+# RESIDUAL LAYER (8)
+
+layer {
+	bottom: "res77"
+	bottom: "conv728"
+	top: "res78"
+	name: "res78"
+	type: "Eltwise"
+}
+
+#####################################################
+
+
+# CONVOLUTIONAL LAYER 8
+
+layer{
+	name: "conv8"
+	type: "Convolution"
+	bottom: "res78"
+	top: "conv8"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3
+		stride: 2 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER
+
+layer {
+	name: "relu8"
+	type: "ReLU"
+	bottom: "conv8"
+	top: "conv8"
+}
+
+
+#####################################################
+
+
+# LAYER 9 (8 * CONVOLUTIONAL + CONVOLUTIONAL + RESIDUAL)
+
+
+# CONVOLUTIONAL LAYER 1 (1)
+
+layer{
+	name: "conv911"
+	type: "Convolution"
+	bottom: "conv8"
+	top: "conv911"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (1)
+
+layer {
+	name: "relu911"
+	type: "ReLU"
+	bottom: "conv911"
+	top: "conv911"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (1)
+
+layer{
+	name: "conv921"
+	type: "Convolution"
+	bottom: "conv911"
+	top: "conv921"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (1)
+
+layer {
+	name: "relu921"
+	type: "ReLU"
+	bottom: "conv921"
+	top: "conv921"
+}
+
+
+# RESIDUAL LAYER (1)
+
+layer {
+	bottom: "conv8"
+	bottom: "conv921"
+	top: "res91"
+	name: "res91"
+	type: "Eltwise"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (2)
+
+layer{
+	name: "conv912"
+	type: "Convolution"
+	bottom: "res91"
+	top: "conv912"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (2)
+
+layer {
+	name: "relu912"
+	type: "ReLU"
+	bottom: "conv912"
+	top: "conv912"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (2)
+
+layer{
+	name: "conv922"
+	type: "Convolution"
+	bottom: "conv912"
+	top: "conv922"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (2)
+
+layer {
+	name: "relu922"
+	type: "ReLU"
+	bottom: "conv922"
+	top: "conv922"
+}
+
+
+# RESIDUAL LAYER (2)
+
+layer {
+	bottom: "res91"
+	bottom: "conv922"
+	top: "res92"
+	name: "res92"
+	type: "Eltwise"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (3)
+
+layer{
+	name: "conv913"
+	type: "Convolution"
+	bottom: "res92"
+	top: "conv913"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (3)
+
+layer {
+	name: "relu913"
+	type: "ReLU"
+	bottom: "conv913"
+	top: "conv913"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (3)
+
+layer{
+	name: "conv923"
+	type: "Convolution"
+	bottom: "conv913"
+	top: "conv923"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (3)
+
+layer {
+	name: "relu923"
+	type: "ReLU"
+	bottom: "conv923"
+	top: "conv923"
+}
+
+
+# RESIDUAL LAYER (3)
+
+layer {
+	bottom: "res92"
+	bottom: "conv923"
+	top: "res93"
+	name: "res93"
+	type: "Eltwise"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (4)
+
+layer{
+	name: "conv914"
+	type: "Convolution"
+	bottom: "res93"
+	top: "conv914"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (4)
+
+layer {
+	name: "relu914"
+	type: "ReLU"
+	bottom: "conv914"
+	top: "conv914"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (4)
+
+layer{
+	name: "conv924"
+	type: "Convolution"
+	bottom: "conv914"
+	top: "conv924"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+	name: "relu924"
+	type: "ReLU"
+	bottom: "conv924"
+	top: "conv924"
+}
+
+
+# RESIDUAL LAYER (4)
+
+layer {
+	bottom: "res93"
+	bottom: "conv924"
+	top: "res94"
+	name: "res94"
+	type: "Eltwise"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (5)
+
+layer{
+	name: "conv915"
+	type: "Convolution"
+	bottom: "res94"
+	top: "conv915"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (5)
+
+layer {
+	name: "relu915"
+	type: "ReLU"
+	bottom: "conv915"
+	top: "conv915"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (5)
+
+layer{
+	name: "conv925"
+	type: "Convolution"
+	bottom: "conv915"
+	top: "conv925"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (5)
+
+layer {
+	name: "relu925"
+	type: "ReLU"
+	bottom: "conv925"
+	top: "conv925"
+}
+
+
+# RESIDUAL LAYER (5)
+
+layer {
+	bottom: "res94"
+	bottom: "conv925"
+	top: "res95"
+	name: "res95"
+	type: "Eltwise"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (6)
+
+layer{
+	name: "conv916"
+	type: "Convolution"
+	bottom: "res95"
+	top: "conv916"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (6)
+
+layer {
+	name: "relu916"
+	type: "ReLU"
+	bottom: "conv916"
+	top: "conv916"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (6)
+
+layer{
+	name: "conv926"
+	type: "Convolution"
+	bottom: "conv916"
+	top: "conv926"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (6)
+
+layer {
+	name: "relu926"
+	type: "ReLU"
+	bottom: "conv926"
+	top: "conv926"
+}
+
+
+# RESIDUAL LAYER (6)
+
+layer {
+	bottom: "res95"
+	bottom: "conv926"
+	top: "res96"
+	name: "res96"
+	type: "Eltwise"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (7)
+
+layer{
+	name: "conv917"
+	type: "Convolution"
+	bottom: "res96"
+	top: "conv917"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (7)
+
+layer {
+	name: "relu917"
+	type: "ReLU"
+	bottom: "conv917"
+	top: "conv917"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (7)
+
+layer{
+	name: "conv927"
+	type: "Convolution"
+	bottom: "conv917"
+	top: "conv927"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (7)
+
+layer {
+	name: "relu927"
+	type: "ReLU"
+	bottom: "conv927"
+	top: "conv927"
+}
+
+
+# RESIDUAL LAYER (7)
+
+layer {
+	bottom: "res96"
+	bottom: "conv927"
+	top: "res97"
+	name: "res97"
+	type: "Eltwise"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (8)
+
+layer{
+	name: "conv918"
+	type: "Convolution"
+	bottom: "res97"
+	top: "conv918"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (8)
+
+layer {
+	name: "relu918"
+	type: "ReLU"
+	bottom: "conv918"
+	top: "conv918"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (8)
+
+layer{
+	name: "conv928"
+	type: "Convolution"
+	bottom: "conv918"
+	top: "conv928"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (8)
+
+layer {
+	name: "relu928"
+	type: "ReLU"
+	bottom: "conv928"
+	top: "conv928"
+}
+
+
+# RESIDUAL LAYER (8)
+
+layer {
+	bottom: "res97"
+	bottom: "conv928"
+	top: "res98"
+	name: "res98"
+	type: "Eltwise"
+}
+
+
+#####################################################
+
+
+# CONVOLUTIONAL LAYER 10
+
+layer{
+	name: "conv10"
+	type: "Convolution"
+	bottom: "res98"
+	top: "conv10"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 1024
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3
+		stride: 2 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER
+
+layer {
+	name: "relu10"
+	type: "ReLU"
+	bottom: "conv10"
+	top: "conv10"
+}
+
+
+#####################################################
+
+
+# LAYER 11 (4 * CONVOLUTIONAL + CONVOLUTIONAL + RESIDUAL)
+
+
+# CONVOLUTIONAL LAYER 1 (1)
+
+layer{
+	name: "conv1111"
+	type: "Convolution"
+	bottom: "conv10"
+	top: "conv1111"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (1)
+
+layer {
+	name: "relu1111"
+	type: "ReLU"
+	bottom: "conv1111"
+	top: "conv1111"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (1)
+
+layer{
+	name: "conv1121"
+	type: "Convolution"
+	bottom: "conv1111"
+	top: "conv1121"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 1024 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (1)
+
+layer {
+	name: "relu1121"
+	type: "ReLU"
+	bottom: "conv1121"
+	top: "conv1121"
+}
+
+
+# RESIDUAL LAYER (1)
+
+layer {
+	bottom: "conv10"
+	bottom: "conv1121"
+	top: "res111"
+	name: "res111"
+	type: "Eltwise"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (2)
+
+layer{
+	name: "conv1112"
+	type: "Convolution"
+	bottom: "res111"
+	top: "conv1112"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (2)
+
+layer {
+	name: "relu1112"
+	type: "ReLU"
+	bottom: "conv1112"
+	top: "conv1112"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (2)
+
+layer{
+	name: "conv1122"
+	type: "Convolution"
+	bottom: "conv1112"
+	top: "conv1122"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 1024 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (2)
+
+layer {
+	name: "relu1122"
+	type: "ReLU"
+	bottom: "conv1122"
+	top: "conv1122"
+}
+
+
+# RESIDUAL LAYER (2)
+
+layer {
+	bottom: "res111"
+	bottom: "conv1122"
+	top: "res112"
+	name: "res112"
+	type: "Eltwise"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (3)
+
+layer{
+	name: "conv1113"
+	type: "Convolution"
+	bottom: "res112"
+	top: "conv1113"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (3)
+
+layer {
+	name: "relu1113"
+	type: "ReLU"
+	bottom: "conv1113"
+	top: "conv1113"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (3)
+
+layer{
+	name: "conv1123"
+	type: "Convolution"
+	bottom: "conv1113"
+	top: "conv1123"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 1024 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (3)
+
+layer {
+	name: "relu1123"
+	type: "ReLU"
+	bottom: "conv1123"
+	top: "conv1123"
+}
+
+
+# RESIDUAL LAYER (3)
+
+layer {
+	bottom: "res112"
+	bottom: "conv1123"
+	top: "res113"
+	name: "res113"
+	type: "Eltwise"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (4)
+
+layer{
+	name: "conv1114"
+	type: "Convolution"
+	bottom: "res113"
+	top: "conv1114"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		#pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (4)
+
+layer {
+	name: "relu1114"
+	type: "ReLU"
+	bottom: "conv1114"
+	top: "conv1114"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (4)
+
+layer{
+	name: "conv1124"
+	type: "Convolution"
+	bottom: "conv1114"
+	top: "conv1124"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 1024 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+	name: "relu1124"
+	type: "ReLU"
+	bottom: "conv1124"
+	top: "conv1124"
+}
+
+
+# RESIDUAL LAYER (4)
+
+layer {
+	bottom: "res113"
+	bottom: "conv1124"
+	top: "res114"
+	name: "res114"
+	type: "Eltwise"
+}
+
+#####################################################
+
+
+# POOLING LAYER
+
+layer {
+	name:"avgpool"
+	type: "Pooling"
+	bottom: "res114"
+	top: "avgpool"
+	pooling_param {	
+		pool: AVE
+		##kernel_size: 2 #2x2 kernel
+		#####stride: 2
+		global_pooling: true
+	}
+}
+
+####################################################
+
+
+# FULLY CONNECTED LAYER
+
+layer {
+	bottom: "avgpool"
+	top: "fc1000"
+	name: "fc1000"
+	type: "InnerProduct"
+	param {
+		lr_mult: 1
+	}
+	param {
+		lr_mult: 2
+	}
+	inner_product_param {
+		num_output: 1000
+		weight_filler {
+			type: "xavier"
+		}
+		bias_filler {
+			type: "constant"
+		}
+	}
+}
+
+####################################################
+
+####################################################
+
+
+# FULLY CONNECTED LAYER
+
+layer {
+	bottom: "fc1000"
+	top: "fc80"
+	name: "fc80"
+	type: "InnerProduct"
+	param {
+		lr_mult: 1
+	}
+	param {
+		lr_mult: 2
+	}
+	inner_product_param {
+		num_output: 80
+		weight_filler {
+			type: "xavier"
+		}
+		bias_filler {
+			type: "constant"
+		}
+	}
+}
+
+####################################################
+
+# SOFTMAX LAYER
+
+layer {
+		bottom: "fc80"
+		top: "loss"
+		name: "loss"
+		type: "Softmax"
+	}
+
+##########################################################
+

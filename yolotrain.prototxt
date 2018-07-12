@@ -1,0 +1,4648 @@
+##### INPUT LAYER ######
+
+#TRAIN INPUT LAYER
+
+layer{
+	name: "data" 
+	type: "ImageData"
+	top: "data"
+	top: "label"
+	image_data_param {
+		source: "./yolotrain.txt"  
+		new_height: 416 
+		new_width: 416  
+		batch_size: 64
+		shuffle: true
+	}
+	include{
+		phase: TRAIN
+	}
+}
+
+
+# TEST INPUT LAYER
+
+layer {
+	name: "data"
+	type: "ImageData"
+	top: "data"
+	top: "label"
+	image_data_param {
+		source: "./yolotest.txt"
+		new_height: 416
+		new_width: 416
+		batch_size: 1
+		shuffle: true
+	}
+	include {
+		phase: TEST
+	}
+}
+
+###################################################
+
+
+# CONVOLUTIONAL LAYER 1
+#0
+layer{
+	name: "conv1"
+	type: "Convolution"
+	bottom: "data"
+	top: "conv1"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 32 
+		pad: 1
+		kernel_size: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER
+
+layer {
+	name: "relu1"
+	type: "ReLU"
+	bottom: "conv1"
+	top: "conv1"
+	relu_param{
+		negative_slope: 1
+	}
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+	name: "bn1"
+	type: "BatchNorm"
+	bottom: "conv1"
+	top: "conv1"
+}
+
+
+####################################################
+
+
+# CONVOLUTIONAL LAYER 2
+#1
+layer{
+	name: "conv2"
+	type: "Convolution"
+	bottom: "conv1"
+	top: "conv2"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 64 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3
+		stride: 2 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER
+
+layer {
+	name: "relu2"
+	type: "ReLU"
+	bottom: "conv2"
+	top: "conv2"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn2"
+        type: "BatchNorm"
+        bottom: "conv2"
+        top: "conv2"
+}
+
+
+#####################################################
+
+
+# LAYER 3 (1 * CONVOLUTIONAL + CONVOLUTIONAL + RESIDUAL)
+
+#2
+# CONVOLUTIONAL LAYER 1 (1)
+
+layer{
+	name: "conv311"
+	type: "Convolution"
+	bottom: "conv2"
+	top: "conv311"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 32 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (1)
+
+layer {
+	name: "relu311"
+	type: "ReLU"
+	bottom: "conv311"
+	top: "conv311"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn311"
+        type: "BatchNorm"
+        bottom: "conv311"
+        top: "conv311"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (1)
+#3
+layer{
+	name: "conv321"
+	type: "Convolution"
+	bottom: "conv311"
+	top: "conv321"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 64 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (1)
+
+layer {
+	name: "relu321"
+	type: "ReLU"
+	bottom: "conv321"
+	top: "conv321"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn321"
+        type: "BatchNorm"
+        bottom: "conv321"
+        top: "conv321"
+}
+
+
+# RESIDUAL LAYER (1)
+#4
+layer {
+	bottom: "conv2"
+	bottom: "conv321"
+	top: "res31"
+	name: "res31"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (1)
+
+layer {
+        name: "relu31"
+        type: "ReLU"
+        bottom: "res31"
+        top: "res31"
+}
+
+
+#####################################################
+
+# CONVOLUTIONAL LAYER 4
+#5
+layer{
+	name: "conv4"
+	type: "Convolution"
+	bottom: "res31"
+	top: "conv4"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3
+		stride: 2 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER
+
+layer {
+	name: "relu4"
+	type: "ReLU"
+	bottom: "conv4"
+	top: "conv4"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn4"
+        type: "BatchNorm"
+        bottom: "conv4"
+        top: "conv4"
+}
+
+
+#####################################################
+
+
+# LAYER 5 (2 * CONVOLUTIONAL + CONVOLUTIONAL + RESIDUAL)
+
+#6
+# CONVOLUTIONAL LAYER 1 (1)
+
+layer{
+	name: "conv511"
+	type: "Convolution"
+	bottom: "conv4"
+	top: "conv511"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 64 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (1)
+
+layer {
+	name: "relu511"
+	type: "ReLU"
+	bottom: "conv511"
+	top: "conv511"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn511"
+        type: "BatchNorm"
+        bottom: "conv511"
+        top: "conv511"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (1)
+#7
+layer{
+	name: "conv521"
+	type: "Convolution"
+	bottom: "conv511"
+	top: "conv521"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (1)
+
+layer {
+	name: "relu521"
+	type: "ReLU"
+	bottom: "conv521"
+	top: "conv521"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn521"
+        type: "BatchNorm"
+        bottom: "conv521"
+        top: "conv521"
+}
+
+
+# RESIDUAL LAYER (1)
+#8
+layer {
+	bottom: "conv4"
+	bottom: "conv521"
+	top: "res51"
+	name: "res51"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (1)
+
+layer {
+        name: "relu51"
+        type: "ReLU"
+        bottom: "res51"
+        top: "res51"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (2)
+#9
+layer{
+	name: "conv512"
+	type: "Convolution"
+	bottom: "res51"
+	top: "conv512"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 64 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (2)
+
+layer {
+	name: "relu512"
+	type: "ReLU"
+	bottom: "conv512"
+	top: "conv512"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn512"
+        type: "BatchNorm"
+        bottom: "conv512"
+        top: "conv512"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (2)
+#10
+layer{
+	name: "conv522"
+	type: "Convolution"
+	bottom: "conv512"
+	top: "conv522"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (2)
+
+layer {
+	name: "relu522"
+	type: "ReLU"
+	bottom: "conv522"
+	top: "conv522"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn522"
+        type: "BatchNorm"
+        bottom: "conv522"
+        top: "conv522"
+}
+
+
+# RESIDUAL LAYER (2)
+#11
+layer {
+	bottom: "res51"
+	bottom: "conv522"
+	top: "res52"
+	name: "res52"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (1)
+
+layer {
+        name: "relu52"
+        type: "ReLU"
+        bottom: "res52"
+        top: "res52"
+}
+
+
+#####################################################
+
+
+# CONVOLUTIONAL LAYER 6
+#12
+layer{
+	name: "conv6"
+	type: "Convolution"
+	bottom: "res52"
+	top: "conv6"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3
+		stride: 2 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER
+
+layer {
+	name: "relu6"
+	type: "ReLU"
+	bottom: "conv6"
+	top: "conv6"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn6"
+        type: "BatchNorm"
+        bottom: "conv6"
+        top: "conv6"
+}
+
+
+#####################################################
+
+
+# LAYER 7 (8 * CONVOLUTIONAL + CONVOLUTIONAL + RESIDUAL)
+
+#13
+# CONVOLUTIONAL LAYER 1 (1)
+
+layer{
+	name: "conv711"
+	type: "Convolution"
+	bottom: "conv6"
+	top: "conv711"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (1)
+
+layer {
+	name: "relu711"
+	type: "ReLU"
+	bottom: "conv711"
+	top: "conv711"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn711"
+        type: "BatchNorm"
+        bottom: "conv711"
+        top: "conv711"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (1)
+#14
+layer{
+	name: "conv721"
+	type: "Convolution"
+	bottom: "conv711"
+	top: "conv721"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (1)
+
+layer {
+	name: "relu721"
+	type: "ReLU"
+	bottom: "conv721"
+	top: "conv721"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn721"
+        type: "BatchNorm"
+        bottom: "conv721"
+        top: "conv721"
+}
+
+
+# RESIDUAL LAYER (1)
+#15
+layer {
+	bottom: "conv6"
+	bottom: "conv721"
+	top: "res71"
+	name: "res71"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (1)
+
+layer {
+        name: "relu71"
+        type: "ReLU"
+        bottom: "res71"
+        top: "res71"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (2)
+#16
+layer{
+	name: "conv712"
+	type: "Convolution"
+	bottom: "res71"
+	top: "conv712"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (2)
+
+layer {
+	name: "relu712"
+	type: "ReLU"
+	bottom: "conv712"
+	top: "conv712"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn712"
+        type: "BatchNorm"
+        bottom: "conv712"
+        top: "conv712"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (2)
+#17
+layer{
+	name: "conv722"
+	type: "Convolution"
+	bottom: "conv712"
+	top: "conv722"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (2)
+
+layer {
+	name: "relu722"
+	type: "ReLU"
+	bottom: "conv722"
+	top: "conv722"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn722"
+        type: "BatchNorm"
+        bottom: "conv722"
+        top: "conv722"
+}
+
+
+# RESIDUAL LAYER (2)
+#18
+layer {
+	bottom: "res71"
+	bottom: "conv722"
+	top: "res72"
+	name: "res72"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (2)
+
+layer {
+        name: "relu72"
+        type: "ReLU"
+        bottom: "res72"
+        top: "res72"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (3)
+#19
+layer{
+	name: "conv713"
+	type: "Convolution"
+	bottom: "res72"
+	top: "conv713"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (3)
+
+layer {
+	name: "relu713"
+	type: "ReLU"
+	bottom: "conv713"
+	top: "conv713"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn713"
+        type: "BatchNorm"
+        bottom: "conv713"
+        top: "conv713"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (3)
+#20
+layer{
+	name: "conv723"
+	type: "Convolution"
+	bottom: "conv713"
+	top: "conv723"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (3)
+
+layer {
+	name: "relu723"
+	type: "ReLU"
+	bottom: "conv723"
+	top: "conv723"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn723"
+        type: "BatchNorm"
+        bottom: "conv723"
+        top: "conv723"
+}
+
+
+# RESIDUAL LAYER (3)
+#21
+layer {
+	bottom: "res72"
+	bottom: "conv723"
+	top: "res73"
+	name: "res73"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (3)
+
+layer {
+        name: "relu73"
+        type: "ReLU"
+        bottom: "res73"
+        top: "res73"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (4)
+#22
+layer{
+	name: "conv714"
+	type: "Convolution"
+	bottom: "res73"
+	top: "conv714"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (4)
+
+layer {
+	name: "relu714"
+	type: "ReLU"
+	bottom: "conv714"
+	top: "conv714"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn714"
+        type: "BatchNorm"
+        bottom: "conv714"
+        top: "conv714"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (4)
+#23
+layer{
+	name: "conv724"
+	type: "Convolution"
+	bottom: "conv714"
+	top: "conv724"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+	name: "relu724"
+	type: "ReLU"
+	bottom: "conv724"
+	top: "conv724"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn724"
+        type: "BatchNorm"
+        bottom: "conv724"
+        top: "conv724"
+}
+
+
+# RESIDUAL LAYER (4)
+#24
+layer {
+	bottom: "res73"
+	bottom: "conv724"
+	top: "res74"
+	name: "res74"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (4)
+
+layer {
+        name: "relu74"
+        type: "ReLU"
+        bottom: "res74"
+        top: "res74"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (5)
+#25
+layer{
+	name: "conv715"
+	type: "Convolution"
+	bottom: "res74"
+	top: "conv715"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (5)
+
+layer {
+	name: "relu715"
+	type: "ReLU"
+	bottom: "conv715"
+	top: "conv715"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn715"
+        type: "BatchNorm"
+        bottom: "conv715"
+        top: "conv715"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (5)
+#26
+layer{
+	name: "conv725"
+	type: "Convolution"
+	bottom: "conv715"
+	top: "conv725"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (5)
+
+layer {
+	name: "relu725"
+	type: "ReLU"
+	bottom: "conv725"
+	top: "conv725"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn725"
+        type: "BatchNorm"
+        bottom: "conv725"
+        top: "conv725"
+}
+
+
+# RESIDUAL LAYER (5)
+#27
+layer {
+	bottom: "res74"
+	bottom: "conv725"
+	top: "res75"
+	name: "res75"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (1)
+
+layer {
+        name: "relu75"
+        type: "ReLU"
+        bottom: "res75"
+        top: "res75"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (6)
+#28
+layer{
+	name: "conv716"
+	type: "Convolution"
+	bottom: "res75"
+	top: "conv716"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (6)
+
+layer {
+	name: "relu716"
+	type: "ReLU"
+	bottom: "conv716"
+	top: "conv716"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn716"
+        type: "BatchNorm"
+        bottom: "conv716"
+        top: "conv716"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (6)
+#29
+layer{
+	name: "conv726"
+	type: "Convolution"
+	bottom: "conv716"
+	top: "conv726"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (6)
+
+layer {
+	name: "relu726"
+	type: "ReLU"
+	bottom: "conv726"
+	top: "conv726"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn726"
+        type: "BatchNorm"
+        bottom: "conv726"
+        top: "conv726"
+}
+
+
+# RESIDUAL LAYER (6)
+#30
+layer {
+	bottom: "res75"
+	bottom: "conv726"
+	top: "res76"
+	name: "res76"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (6)
+
+layer {
+        name: "relu76"
+        type: "ReLU"
+        bottom: "res76"
+        top: "res76"
+}
+
+# CONVOLUTIONAL LAYER 1 (7)
+#31
+layer{
+	name: "conv717"
+	type: "Convolution"
+	bottom: "res76"
+	top: "conv717"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (7)
+
+layer {
+	name: "relu717"
+	type: "ReLU"
+	bottom: "conv717"
+	top: "conv717"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn717"
+        type: "BatchNorm"
+        bottom: "conv717"
+        top: "conv717"
+}
+
+
+
+
+# CONVOLUTIONAL LAYER 2 (7)
+#32
+layer{
+	name: "conv727"
+	type: "Convolution"
+	bottom: "conv717"
+	top: "conv727"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (7)
+
+layer {
+	name: "relu727"
+	type: "ReLU"
+	bottom: "conv727"
+	top: "conv727"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn727"
+        type: "BatchNorm"
+        bottom: "conv727"
+        top: "conv727"
+}
+
+
+# RESIDUAL LAYER (7)
+#33
+layer {
+	bottom: "res76"
+	bottom: "conv727"
+	top: "res77"
+	name: "res77"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (1)
+
+layer {
+        name: "relu77"
+        type: "ReLU"
+        bottom: "res77"
+        top: "res77"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (8)
+#34
+layer{
+	name: "conv718"
+	type: "Convolution"
+	bottom: "res77"
+	top: "conv718"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 128 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (8)
+
+layer {
+	name: "relu718"
+	type: "ReLU"
+	bottom: "conv718"
+	top: "conv718"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn718"
+        type: "BatchNorm"
+        bottom: "conv718"
+        top: "conv718"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (8)
+#35
+layer{
+	name: "conv728"
+	type: "Convolution"
+	bottom: "conv718"
+	top: "conv728"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (8)
+
+layer {
+	name: "relu728"
+	type: "ReLU"
+	bottom: "conv728"
+	top: "conv728"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn728"
+        type: "BatchNorm"
+        bottom: "conv728"
+        top: "conv728"
+}
+
+
+# RESIDUAL LAYER (8)
+#36
+layer {
+	bottom: "res77"
+	bottom: "conv728"
+	top: "res78"
+	name: "res78"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (8)
+
+layer {
+        name: "relu78"
+        type: "ReLU"
+        bottom: "res78"
+        top: "res78"
+}
+
+
+#####################################################
+
+
+# CONVOLUTIONAL LAYER 8
+#37
+layer{
+	name: "conv8"
+	type: "Convolution"
+	bottom: "res78"
+	top: "conv8"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3
+		stride: 2 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER
+
+layer {
+	name: "relu8"
+	type: "ReLU"
+	bottom: "conv8"
+	top: "conv8"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn8"
+        type: "BatchNorm"
+        bottom: "conv8"
+        top: "conv8"
+}
+
+
+#####################################################
+
+
+# LAYER 9 (8 * CONVOLUTIONAL + CONVOLUTIONAL + RESIDUAL)
+
+
+# CONVOLUTIONAL LAYER 1 (1)
+#38
+layer{
+	name: "conv911"
+	type: "Convolution"
+	bottom: "conv8"
+	top: "conv911"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (1)
+
+layer {
+	name: "relu911"
+	type: "ReLU"
+	bottom: "conv911"
+	top: "conv911"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn911"
+        type: "BatchNorm"
+        bottom: "conv911"
+        top: "conv911"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (1)
+#39
+layer{
+	name: "conv921"
+	type: "Convolution"
+	bottom: "conv911"
+	top: "conv921"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (1)
+
+layer {
+	name: "relu921"
+	type: "ReLU"
+	bottom: "conv921"
+	top: "conv921"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn921"
+        type: "BatchNorm"
+        bottom: "conv921"
+        top: "conv921"
+}
+
+
+# RESIDUAL LAYER (1)
+#40
+layer {
+	bottom: "conv8"
+	bottom: "conv921"
+	top: "res91"
+	name: "res91"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (1)
+
+layer {
+        name: "relu91"
+        type: "ReLU"
+        bottom: "res91"
+        top: "res91"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (2)
+#41
+layer{
+	name: "conv912"
+	type: "Convolution"
+	bottom: "res91"
+	top: "conv912"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (2)
+
+layer {
+	name: "relu912"
+	type: "ReLU"
+	bottom: "conv912"
+	top: "conv912"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn912"
+        type: "BatchNorm"
+        bottom: "conv912"
+        top: "conv912"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (2)
+#42
+layer{
+	name: "conv922"
+	type: "Convolution"
+	bottom: "conv912"
+	top: "conv922"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (2)
+
+layer {
+	name: "relu922"
+	type: "ReLU"
+	bottom: "conv922"
+	top: "conv922"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn922"
+        type: "BatchNorm"
+        bottom: "conv922"
+        top: "conv922"
+}
+
+
+# RESIDUAL LAYER (2)
+#43
+layer {
+	bottom: "res91"
+	bottom: "conv922"
+	top: "res92"
+	name: "res92"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (2)
+
+layer {
+        name: "relu92"
+        type: "ReLU"
+        bottom: "res92"
+        top: "res92"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (3)
+#44
+layer{
+	name: "conv913"
+	type: "Convolution"
+	bottom: "res92"
+	top: "conv913"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (3)
+
+layer {
+	name: "relu913"
+	type: "ReLU"
+	bottom: "conv913"
+	top: "conv913"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn913"
+        type: "BatchNorm"
+        bottom: "conv913"
+        top: "conv913"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (3)
+#45
+layer{
+	name: "conv923"
+	type: "Convolution"
+	bottom: "conv913"
+	top: "conv923"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (3)
+
+layer {
+	name: "relu923"
+	type: "ReLU"
+	bottom: "conv923"
+	top: "conv923"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn923"
+        type: "BatchNorm"
+        bottom: "conv923"
+        top: "conv923"
+}
+
+
+
+# RESIDUAL LAYER (3)
+#46
+layer {
+	bottom: "res92"
+	bottom: "conv923"
+	top: "res93"
+	name: "res93"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (3)
+
+layer {
+        name: "relu93"
+        type: "ReLU"
+        bottom: "res93"
+        top: "res93"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (4)
+#47
+layer{
+	name: "conv914"
+	type: "Convolution"
+	bottom: "res93"
+	top: "conv914"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (4)
+
+layer {
+	name: "relu914"
+	type: "ReLU"
+	bottom: "conv914"
+	top: "conv914"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn914"
+        type: "BatchNorm"
+        bottom: "conv914"
+        top: "conv914"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (4)
+#48
+layer{
+	name: "conv924"
+	type: "Convolution"
+	bottom: "conv914"
+	top: "conv924"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+	name: "relu924"
+	type: "ReLU"
+	bottom: "conv924"
+	top: "conv924"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn924"
+        type: "BatchNorm"
+        bottom: "conv924"
+        top: "conv924"
+}
+
+
+# RESIDUAL LAYER (4)
+#49
+layer {
+	bottom: "res93"
+	bottom: "conv924"
+	top: "res94"
+	name: "res94"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (1)
+
+layer {
+        name: "relu94"
+        type: "ReLU"
+        bottom: "res94"
+        top: "res94"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (5)
+#50
+layer{
+	name: "conv915"
+	type: "Convolution"
+	bottom: "res94"
+	top: "conv915"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (5)
+
+layer {
+	name: "relu915"
+	type: "ReLU"
+	bottom: "conv915"
+	top: "conv915"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn915"
+        type: "BatchNorm"
+        bottom: "conv915"
+        top: "conv915"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (5)
+#51
+layer{
+	name: "conv925"
+	type: "Convolution"
+	bottom: "conv915"
+	top: "conv925"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (5)
+
+layer {
+	name: "relu925"
+	type: "ReLU"
+	bottom: "conv925"
+	top: "conv925"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn925"
+        type: "BatchNorm"
+        bottom: "conv925"
+        top: "conv925"
+}
+
+
+# RESIDUAL LAYER (5)
+#52
+layer {
+	bottom: "res94"
+	bottom: "conv925"
+	top: "res95"
+	name: "res95"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (5)
+
+layer {
+        name: "relu95"
+        type: "ReLU"
+        bottom: "res95"
+        top: "res95"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (6)
+#53
+layer{
+	name: "conv916"
+	type: "Convolution"
+	bottom: "res95"
+	top: "conv916"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (6)
+
+layer {
+	name: "relu916"
+	type: "ReLU"
+	bottom: "conv916"
+	top: "conv916"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn916"
+        type: "BatchNorm"
+        bottom: "conv916"
+        top: "conv916"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (6)
+#54
+layer{
+	name: "conv926"
+	type: "Convolution"
+	bottom: "conv916"
+	top: "conv926"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (6)
+
+layer {
+	name: "relu926"
+	type: "ReLU"
+	bottom: "conv926"
+	top: "conv926"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn926"
+        type: "BatchNorm"
+        bottom: "conv926"
+        top: "conv926"
+}
+
+
+# RESIDUAL LAYER (6)
+#55
+layer {
+	bottom: "res95"
+	bottom: "conv926"
+	top: "res96"
+	name: "res96"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (6)
+
+layer {
+        name: "relu96"
+        type: "ReLU"
+        bottom: "res96"
+        top: "res96"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (7)
+#56
+layer{
+	name: "conv917"
+	type: "Convolution"
+	bottom: "res96"
+	top: "conv917"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (7)
+
+layer {
+	name: "relu917"
+	type: "ReLU"
+	bottom: "conv917"
+	top: "conv917"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn917"
+        type: "BatchNorm"
+        bottom: "conv917"
+        top: "conv917"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (7)
+#57
+layer{
+	name: "conv927"
+	type: "Convolution"
+	bottom: "conv917"
+	top: "conv927"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (7)
+
+layer {
+	name: "relu927"
+	type: "ReLU"
+	bottom: "conv927"
+	top: "conv927"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn927"
+        type: "BatchNorm"
+        bottom: "conv927"
+        top: "conv927"
+}
+
+
+# RESIDUAL LAYER (7)
+#58
+layer {
+	bottom: "res96"
+	bottom: "conv927"
+	top: "res97"
+	name: "res97"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (7)
+
+layer {
+        name: "relu97"
+        type: "ReLU"
+        bottom: "res97"
+        top: "res97"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (8)
+#59
+layer{
+	name: "conv918"
+	type: "Convolution"
+	bottom: "res97"
+	top: "conv918"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 256 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (8)
+
+layer {
+	name: "relu918"
+	type: "ReLU"
+	bottom: "conv918"
+	top: "conv918"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn918"
+        type: "BatchNorm"
+        bottom: "conv918"
+        top: "conv918"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (8)
+#60
+layer{
+	name: "conv928"
+	type: "Convolution"
+	bottom: "conv918"
+	top: "conv928"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (8)
+
+layer {
+	name: "relu928"
+	type: "ReLU"
+	bottom: "conv928"
+	top: "conv928"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn928"
+        type: "BatchNorm"
+        bottom: "conv928"
+        top: "conv928"
+}
+
+
+# RESIDUAL LAYER (8)
+#61
+layer {
+	bottom: "res97"
+	bottom: "conv928"
+	top: "res98"
+	name: "res98"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (8)
+
+layer {
+        name: "relu98"
+        type: "ReLU"
+        bottom: "res98"
+        top: "res98"
+}
+
+
+#####################################################
+
+
+# CONVOLUTIONAL LAYER 10
+#62
+layer{
+	name: "conv10"
+	type: "Convolution"
+	bottom: "res98"
+	top: "conv10"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 1024
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3
+		stride: 2 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER
+
+layer {
+	name: "relu10"
+	type: "ReLU"
+	bottom: "conv10"
+	top: "conv10"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn10"
+        type: "BatchNorm"
+        bottom: "conv10"
+        top: "conv10"
+}
+
+
+#####################################################
+
+
+# LAYER 11 (4 * CONVOLUTIONAL + CONVOLUTIONAL + RESIDUAL)
+
+
+# CONVOLUTIONAL LAYER 1 (1)
+#63
+layer{
+	name: "conv1111"
+	type: "Convolution"
+	bottom: "conv10"
+	top: "conv1111"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (1)
+
+layer {
+	name: "relu1111"
+	type: "ReLU"
+	bottom: "conv1111"
+	top: "conv1111"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn1111"
+        type: "BatchNorm"
+        bottom: "conv1111"
+        top: "conv1111"
+}
+
+
+# CONVOLUTIONAL LAYER 2 (1)
+#64
+layer{
+	name: "conv1121"
+	type: "Convolution"
+	bottom: "conv1111"
+	top: "conv1121"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 1024 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (1)
+
+layer {
+	name: "relu1121"
+	type: "ReLU"
+	bottom: "conv1121"
+	top: "conv1121"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn1121"
+        type: "BatchNorm"
+        bottom: "conv1121"
+        top: "conv1121"
+}
+
+
+# RESIDUAL LAYER (1)
+#65
+layer {
+	bottom: "conv10"
+	bottom: "conv1121"
+	top: "res111"
+	name: "res111"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (1)
+
+layer {
+        name: "relu111"
+        type: "ReLU"
+        bottom: "res111"
+        top: "res111"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (2)
+#66
+layer{
+	name: "conv1112"
+	type: "Convolution"
+	bottom: "res111"
+	top: "conv1112"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (2)
+
+layer {
+	name: "relu1112"
+	type: "ReLU"
+	bottom: "conv1112"
+	top: "conv1112"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn1112"
+        type: "BatchNorm"
+        bottom: "conv1112"
+        top: "conv1112"
+}
+
+
+# CONVOLUTIONAL LAYER 2 (2)
+#67
+layer{
+	name: "conv1122"
+	type: "Convolution"
+	bottom: "conv1112"
+	top: "conv1122"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 1024 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (2)
+
+layer {
+	name: "relu1122"
+	type: "ReLU"
+	bottom: "conv1122"
+	top: "conv1122"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn1122"
+        type: "BatchNorm"
+        bottom: "conv1122"
+        top: "conv1122"
+}
+
+
+# RESIDUAL LAYER (2)
+#68
+layer {
+	bottom: "res111"
+	bottom: "conv1122"
+	top: "res112"
+	name: "res112"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (1)
+
+layer {
+        name: "relu112"
+        type: "ReLU"
+        bottom: "res112"
+        top: "res112"
+}
+
+
+# CONVOLUTIONAL LAYER 1 (3)
+#69
+layer{
+	name: "conv1113"
+	type: "Convolution"
+	bottom: "res112"
+	top: "conv1113"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (3)
+
+layer {
+	name: "relu1113"
+	type: "ReLU"
+	bottom: "conv1113"
+	top: "conv1113"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn1113"
+        type: "BatchNorm"
+        bottom: "conv1113"
+        top: "conv1113"
+}
+
+
+
+# CONVOLUTIONAL LAYER 2 (3)
+#70
+layer{
+	name: "conv1123"
+	type: "Convolution"
+	bottom: "conv1113"
+	top: "conv1123"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 1024 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (3)
+
+layer {
+	name: "relu1123"
+	type: "ReLU"
+	bottom: "conv1123"
+	top: "conv1123"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn1123"
+        type: "BatchNorm"
+        bottom: "conv1123"
+        top: "conv1123"
+}
+
+
+# RESIDUAL LAYER (3)
+#71
+layer {
+	bottom: "res112"
+	bottom: "conv1123"
+	top: "res113"
+	name: "res113"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (3)
+
+layer {
+        name: "relu113"
+        type: "ReLU"
+        bottom: "res113"
+        top: "res113"
+}
+
+
+
+# CONVOLUTIONAL LAYER 1 (4)
+#72
+layer{
+	name: "conv1114"
+	type: "Convolution"
+	bottom: "res113"
+	top: "conv1114"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 512 
+		pad: 1
+		kernel_h: 1
+		kernel_w: 1 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 1 (4)
+
+layer {
+	name: "relu1114"
+	type: "ReLU"
+	bottom: "conv1114"
+	top: "conv1114"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn1114"
+        type: "BatchNorm"
+        bottom: "conv1114"
+        top: "conv1114"
+}
+
+
+# CONVOLUTIONAL LAYER 2 (4)
+#73
+layer{
+	name: "conv1124"
+	type: "Convolution"
+	bottom: "conv1114"
+	top: "conv1124"	
+	param {
+		lr_mult:1  #weights
+	}
+	param {
+		lr_mult:2  #biases
+	}
+	convolution_param {
+		num_output: 1024 
+		pad: 1
+		kernel_h: 3
+		kernel_w: 3 
+		weight_filler {
+			type: "xavier" 
+		}
+		bias_filler {
+			type: "constant" 
+			value: 0 
+		}
+	}
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+	name: "relu1124"
+	type: "ReLU"
+	bottom: "conv1124"
+	top: "conv1124"
+	relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn1124"
+        type: "BatchNorm"
+        bottom: "conv1124"
+        top: "conv1124"
+}
+
+
+# RESIDUAL LAYER (4)
+#74
+layer {
+	bottom: "res113"
+	bottom: "conv1124"
+	top: "res114"
+	name: "res114"
+	type: "Eltwise"
+}
+
+# RESIDUAL RELU LAYER (4)
+
+layer {
+        name: "relu114"
+        type: "ReLU"
+        bottom: "res114"
+        top: "res114"
+}
+
+
+#####################################################
+# 7 convolutional layers and then a detection layer
+
+#75
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv75"
+        type: "Convolution"
+        bottom: "res114"
+        top: "conv75"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 512
+                pad: 1
+                kernel_h: 1
+                kernel_w: 1
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu75"
+        type: "ReLU"
+        bottom: "conv75"
+        top: "conv75"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn75"
+        type: "BatchNorm"
+        bottom: "conv75"
+        top: "conv75"
+
+}
+
+#####################################
+
+#76
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv76"
+        type: "Convolution"
+        bottom: "conv75"
+        top: "conv76"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 1024
+                pad: 1
+                kernel_h: 3
+                kernel_w: 3
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu76"
+        type: "ReLU"
+        bottom: "conv76"
+        top: "conv76"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn76"
+        type: "BatchNorm"
+        bottom: "conv76"
+        top: "conv76"
+
+}
+
+########################################
+#77
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv77"
+        type: "Convolution"
+        bottom: "conv76"
+        top: "conv77"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 512
+                pad: 1
+                kernel_h: 1
+                kernel_w: 1
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu77"
+        type: "ReLU"
+        bottom: "conv77"
+        top: "conv77"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn77"
+        type: "BatchNorm"
+        bottom: "conv77"
+        top: "conv77"
+
+}
+
+########################################
+#78
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv78"
+        type: "Convolution"
+        bottom: "conv77"
+        top: "conv78"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 1024
+                pad: 1
+                kernel_h: 3
+                kernel_w: 3
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu78"
+        type: "ReLU"
+        bottom: "conv78"
+        top: "conv78"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn78"
+        type: "BatchNorm"
+        bottom: "conv78"
+        top: "conv78"
+
+}
+
+########################################
+#79
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv79"
+        type: "Convolution"
+        bottom: "conv78"
+        top: "conv79"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 512
+                pad: 1
+                kernel_h: 1
+                kernel_w: 1
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu79"
+        type: "ReLU"
+        bottom: "conv79"
+        top: "conv79"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn79"
+        type: "BatchNorm"
+        bottom: "conv79"
+        top: "conv79"
+
+}
+
+########################################
+#80
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv80"
+        type: "Convolution"
+        bottom: "conv79"
+        top: "conv80"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 1024
+                pad: 1
+                kernel_h: 3
+                kernel_w: 3
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu80"
+        type: "ReLU"
+        bottom: "conv80"
+        top: "conv80"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn80"
+        type: "BatchNorm"
+        bottom: "conv80"
+        top: "conv80"
+
+}
+
+########################################
+#81
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv81"
+        type: "Convolution"
+        bottom: "conv80"
+        top: "conv81"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 255
+                pad: 1
+                kernel_h: 1
+                kernel_w: 1
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu81"
+        type: "ReLU"
+        bottom: "conv81"
+        top: "conv81"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn81"
+        type: "BatchNorm"
+        bottom: "conv81"
+        top: "conv81"
+
+}
+
+
+########################################
+
+#82 Detection
+
+##Detector.py
+########################################
+
+#83 route 79
+
+########################################
+
+#84
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv84"
+        type: "Convolution"
+        bottom: "conv79"
+        top: "conv84"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 256
+                pad: 1
+                kernel_h: 1
+                kernel_w: 1
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu84"
+        type: "ReLU"
+        bottom: "conv84"
+        top: "conv84"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn84"
+        type: "BatchNorm"
+        bottom: "conv84"
+        top: "conv84"
+
+}
+
+
+########################################
+
+#85 upsample layer
+
+
+layer {
+  name: "upsample85"
+  type: "Deconvolution"
+  bottom: "conv84"
+  top: "upsample85"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    kernel_size: 1
+    stride: 2
+  }
+}
+
+
+########################################
+
+#86
+
+# Route 85 61
+
+layer {
+  name: "concat"
+  bottom: "upsample85"
+  bottom: "res98"
+  top: "out1"
+  type: "Concat"
+  concat_param {
+    axis: 1
+  }
+}
+
+########################################
+
+#87
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv87"
+        type: "Convolution"
+        bottom: "out1"
+        top: "conv87"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 256
+                pad: 1
+                kernel_h: 1
+                kernel_w: 1
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu87"
+        type: "ReLU"
+        bottom: "conv87"
+        top: "conv87"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn87"
+        type: "BatchNorm"
+        bottom: "conv87"
+        top: "conv87"
+
+}
+
+
+########################################
+
+#88
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv88"
+        type: "Convolution"
+        bottom: "conv87"
+        top: "conv88"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 512
+                pad: 1
+                kernel_h: 3
+                kernel_w: 3
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu88"
+        type: "ReLU"
+        bottom: "conv88"
+        top: "conv88"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn88"
+        type: "BatchNorm"
+        bottom: "conv88"
+        top: "conv88"
+
+}
+
+
+########################################
+
+#89
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv89"
+        type: "Convolution"
+        bottom: "conv88"
+        top: "conv89"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 256
+                pad: 1
+                kernel_h: 1
+                kernel_w: 1
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu89"
+        type: "ReLU"
+        bottom: "conv89"
+        top: "conv89"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn89"
+        type: "BatchNorm"
+        bottom: "conv89"
+        top: "conv89"
+
+}
+
+########################################
+
+#90
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv90"
+        type: "Convolution"
+        bottom: "conv89"
+        top: "conv90"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 512
+                pad: 1
+                kernel_h: 3
+                kernel_w: 3
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu90"
+        type: "ReLU"
+        bottom: "conv90"
+        top: "conv90"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn90"
+        type: "BatchNorm"
+        bottom: "conv90"
+        top: "conv90"
+
+}
+########################################
+
+#91
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv91"
+        type: "Convolution"
+        bottom: "conv90"
+        top: "conv91"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 256
+                pad: 1
+                kernel_h: 1
+                kernel_w: 1
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu91"
+        type: "ReLU"
+        bottom: "conv91"
+        top: "conv91"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn91"
+        type: "BatchNorm"
+        bottom: "conv91"
+        top: "conv91"
+
+}
+
+########################################
+
+#92
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv92"
+        type: "Convolution"
+        bottom: "conv91"
+        top: "conv92"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 512
+                pad: 1
+                kernel_h: 3
+                kernel_w: 3
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu92"
+        type: "ReLU"
+        bottom: "conv92"
+        top: "conv92"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn92"
+        type: "BatchNorm"
+        bottom: "conv92"
+        top: "conv92"
+
+}
+########################################
+
+#93
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv93"
+        type: "Convolution"
+        bottom: "conv92"
+        top: "conv93"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 255
+                pad: 1
+                kernel_h: 1
+                kernel_w: 1
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu93"
+        type: "ReLU"
+        bottom: "conv93"
+        top: "conv93"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn93"
+        type: "BatchNorm"
+        bottom: "conv93"
+        top: "conv93"
+
+}
+
+########################################
+
+#94 DETECTION LAYER
+
+########################################
+
+#95 Route 91
+
+########################################
+
+#96
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv96"
+        type: "Convolution"
+        bottom: "conv91"
+        top: "conv96"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 128
+                pad: 1
+                kernel_h: 1
+                kernel_w: 1
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu96"
+        type: "ReLU"
+        bottom: "conv96"
+        top: "conv96"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn96"
+        type: "BatchNorm"
+        bottom: "conv96"
+        top: "conv96"
+
+}
+
+
+########################################
+
+#97 upsample layer
+
+
+layer {
+  name: "upsample97"
+  type: "Deconvolution"
+  bottom: "conv96"
+  top: "upsample97"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    num_output: 128
+    bias_term: false
+    kernel_size: 1
+    stride: 2
+  }
+}
+
+
+########################################
+
+#98
+
+# Route 97 36
+
+layer {
+  name: "concat"
+  bottom: "upsample97"
+  bottom: "res78"
+  top: "out2"
+  type: "Concat"
+  concat_param {
+    axis: 1
+  }
+}
+
+########################################
+
+#99
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv99"
+        type: "Convolution"
+        bottom: "out2"
+        top: "conv99"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 128
+                pad: 1
+                kernel_h: 1
+                kernel_w: 1
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu99"
+        type: "ReLU"
+        bottom: "conv99"
+        top: "conv99"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn99"
+        type: "BatchNorm"
+        bottom: "conv99"
+        top: "conv99"
+
+}
+
+
+########################################
+
+#100
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv100"
+        type: "Convolution"
+        bottom: "conv99"
+        top: "conv100"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 256
+                pad: 1
+                kernel_h: 3
+                kernel_w: 3
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu100"
+        type: "ReLU"
+        bottom: "conv100"
+        top: "conv100"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn100"
+        type: "BatchNorm"
+        bottom: "conv100"
+        top: "conv100"
+
+}
+
+########################################
+
+#101
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv101"
+        type: "Convolution"
+        bottom: "conv100"
+        top: "conv101"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 128
+                pad: 1
+                kernel_h: 1
+                kernel_w: 1
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu101"
+        type: "ReLU"
+        bottom: "conv101"
+        top: "conv101"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn101"
+        type: "BatchNorm"
+        bottom: "conv101"
+        top: "conv101"
+
+}
+
+########################################
+
+#102
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv102"
+        type: "Convolution"
+        bottom: "conv101"
+        top: "conv102"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 256
+                pad: 1
+                kernel_h: 3
+                kernel_w: 3
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu102"
+        type: "ReLU"
+        bottom: "conv102"
+        top: "conv102"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn102"
+        type: "BatchNorm"
+        bottom: "conv102"
+        top: "conv102"
+
+}
+########################################
+
+#103
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv103"
+        type: "Convolution"
+        bottom: "conv102"
+        top: "conv103"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 128
+                pad: 1
+                kernel_h: 1
+                kernel_w: 1
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu103"
+        type: "ReLU"
+        bottom: "conv103"
+        top: "conv103"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn103"
+        type: "BatchNorm"
+        bottom: "conv103"
+        top: "conv103"
+
+}
+########################################
+
+#104
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv104"
+        type: "Convolution"
+        bottom: "conv103"
+        top: "conv104"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 256
+                pad: 1
+                kernel_h: 3
+                kernel_w: 3
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu104"
+        type: "ReLU"
+        bottom: "conv104"
+        top: "conv104"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn104"
+        type: "BatchNorm"
+        bottom: "conv104"
+        top: "conv104"
+
+}
+
+
+########################################
+
+#105
+
+# CONVOLUTIONAL LAYER 2 (4)
+layer{
+        name: "conv105"
+        type: "Convolution"
+        bottom: "conv104"
+        top: "conv105"
+        param {
+                lr_mult:1  #weights
+        }
+        param {
+                lr_mult:2  #biases
+        }
+        convolution_param {
+                num_output: 255
+                pad: 1
+                kernel_h: 1
+                kernel_w: 1
+                weight_filler {
+                        type: "xavier"
+                }
+                bias_filler {
+                        type: "constant"
+                        value: 0
+                }
+        }
+}
+
+# RELU LAYER 2 (4)
+
+layer {
+        name: "relu105"
+        type: "ReLU"
+        bottom: "conv105"
+        top: "conv105"
+        relu_param{
+                negative_slope: 1
+        }
+}
+
+# BATCH NORMALISATION LAYER
+
+layer{
+        name: "bn105"
+        type: "BatchNorm"
+        bottom: "conv105"
+        top: "conv105"
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#####################################################
+# POOLING LAYER
+
+layer {
+	name:"avgpool"
+	type: "Pooling"
+	bottom: "res114"
+	top: "avgpool"
+	pooling_param {	
+		pool: AVE
+		##kernel_size: 2 #2x2 kernel
+		#####stride: 2
+		global_pooling: true
+	}
+}
+
+####################################################
+
+
+# FULLY CONNECTED LAYER
+
+layer {
+	bottom: "avgpool"
+	top: "fc1000"
+	name: "fc1000"
+	type: "InnerProduct"
+	param {
+		lr_mult: 1
+	}
+	param {
+		lr_mult: 2
+	}
+	inner_product_param {
+		num_output: 1000
+		weight_filler {
+			type: "xavier"
+		}
+		bias_filler {
+			type: "constant"
+		}
+	}
+}
+
+####################################################
+
+####################################################
+
+
+# FULLY CONNECTED LAYER
+
+layer {
+	bottom: "fc1000"
+	top: "fc80"
+	name: "fc80"
+	type: "InnerProduct"
+	param {
+		lr_mult: 1
+	}
+	param {
+		lr_mult: 2
+	}
+	inner_product_param {
+		num_output: 80
+		weight_filler {
+			type: "xavier"
+		}
+		bias_filler {
+			type: "constant"
+		}
+	}
+}
+
+####################################################
+
+####################################################
+
+
+# SOFTMAX LAYER
+
+layer {
+	name: "loss"
+	type: "SoftmaxWithLoss"
+	bottom: "fc80"
+	bottom: "label"
+	top: "loss"
+	include {
+		phase: TRAIN
+	}
+}
+
+### Softmax without loss for testing
+
+layer {
+	bottom: "fc80" 
+	top: "prob"
+	name: "prob"
+	type: "Softmax"
+	include {
+		phase: TEST
+	}
+}
+
+###############################################################################
+
+
+######
+### ACCURACY LAYER
+#
+
+layer {
+	name: "accuracy"
+	type: "Accuracy"
+	bottom: "prob"
+	bottom: "label"
+	top: "accuracy/top-1"
+	include {
+		phase: TEST
+	}
+}
+
+#####################################

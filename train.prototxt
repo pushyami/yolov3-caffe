@@ -87,7 +87,7 @@ layer{
 	name: "bn0"
 	type: "BatchNorm"
 	bottom: "conv0"
-	top: "conv0"
+	top: "bn0"
 }
 
 
@@ -257,6 +257,7 @@ layer {
 	top: "res3"
 	name: "res3"
 	type: "Eltwise"
+	
 }
 
 # RESIDUAL RELU LAYER (1)
@@ -270,7 +271,7 @@ layer {
 
 
 #####################################################
-
+i
 # CONVOLUTIONAL LAYER 4
 #5
 layer{
@@ -2149,10 +2150,10 @@ layer {
 # CONVOLUTIONAL LAYER 1 (5)
 #50
 layer{
-	name: "conv915"
+	name: "conv50"
 	type: "Convolution"
-	bottom: "res94"
-	top: "conv915"	
+	bottom: "res49"
+	top: "conv50"	
 	param {
 		lr_mult:1  #weights
 	}
@@ -3187,7 +3188,7 @@ layer {
 layer{
         name: "conv75"
         type: "Convolution"
-        bottom: "res114"
+        bottom: "res74"
         top: "conv75"
         param {
                 lr_mult:1  #weights
@@ -3198,8 +3199,7 @@ layer{
         convolution_param {
                 num_output: 512
                 pad: 1
-                kernel_h: 1
-                kernel_w: 1
+                kernel_size: 1
                 weight_filler {
                         type: "xavier"
                 }
@@ -3228,7 +3228,7 @@ layer{
         name: "bn75"
         type: "BatchNorm"
         bottom: "conv75"
-        top: "conv75"
+        top: "bn75"
 
 }
 
@@ -3240,7 +3240,7 @@ layer{
 layer{
         name: "conv76"
         type: "Convolution"
-        bottom: "conv75"
+        bottom: "bn75"
         top: "conv76"
         param {
                 lr_mult:1  #weights
@@ -3251,8 +3251,7 @@ layer{
         convolution_param {
                 num_output: 1024
                 pad: 1
-                kernel_h: 3
-                kernel_w: 3
+                kernel_size: 3
                 weight_filler {
                         type: "xavier"
                 }
@@ -3281,7 +3280,7 @@ layer{
         name: "bn76"
         type: "BatchNorm"
         bottom: "conv76"
-        top: "conv76"
+        top: "bn76"
 
 }
 
@@ -3292,7 +3291,7 @@ layer{
 layer{
         name: "conv77"
         type: "Convolution"
-        bottom: "conv76"
+        bottom: "bn76"
         top: "conv77"
         param {
                 lr_mult:1  #weights
@@ -3303,8 +3302,7 @@ layer{
         convolution_param {
                 num_output: 512
                 pad: 1
-                kernel_h: 1
-                kernel_w: 1
+                kernel_size: 1
                 weight_filler {
                         type: "xavier"
                 }
@@ -3333,7 +3331,7 @@ layer{
         name: "bn77"
         type: "BatchNorm"
         bottom: "conv77"
-        top: "conv77"
+        top: "bn77"
 
 }
 
@@ -3344,7 +3342,7 @@ layer{
 layer{
         name: "conv78"
         type: "Convolution"
-        bottom: "conv77"
+        bottom: "bn77"
         top: "conv78"
         param {
                 lr_mult:1  #weights
@@ -3355,8 +3353,7 @@ layer{
         convolution_param {
                 num_output: 1024
                 pad: 1
-                kernel_h: 3
-                kernel_w: 3
+                kernel_size: 3
                 weight_filler {
                         type: "xavier"
                 }
@@ -3385,7 +3382,7 @@ layer{
         name: "bn78"
         type: "BatchNorm"
         bottom: "conv78"
-        top: "conv78"
+        top: "bn78"
 
 }
 
@@ -3396,7 +3393,7 @@ layer{
 layer{
         name: "conv79"
         type: "Convolution"
-        bottom: "conv78"
+        bottom: "bn78"
         top: "conv79"
         param {
                 lr_mult:1  #weights
@@ -3407,8 +3404,7 @@ layer{
         convolution_param {
                 num_output: 512
                 pad: 1
-                kernel_h: 1
-                kernel_w: 1
+                kernel_size: 1
                 weight_filler {
                         type: "xavier"
                 }
@@ -3437,7 +3433,7 @@ layer{
         name: "bn79"
         type: "BatchNorm"
         bottom: "conv79"
-        top: "conv79"
+        top: "bn79"
 
 }
 
@@ -3448,7 +3444,7 @@ layer{
 layer{
         name: "conv80"
         type: "Convolution"
-        bottom: "conv79"
+        bottom: "bn79"
         top: "conv80"
         param {
                 lr_mult:1  #weights
@@ -3459,8 +3455,7 @@ layer{
         convolution_param {
                 num_output: 1024
                 pad: 1
-                kernel_h: 3
-                kernel_w: 3
+                kernel_size: 3
                 weight_filler {
                         type: "xavier"
                 }
@@ -3489,7 +3484,7 @@ layer{
         name: "bn80"
         type: "BatchNorm"
         bottom: "conv80"
-        top: "conv80"
+        top: "bn80"
 
 }
 
@@ -3500,7 +3495,7 @@ layer{
 layer{
         name: "conv81"
         type: "Convolution"
-        bottom: "conv80"
+        bottom: "bn80"
         top: "conv81"
         param {
                 lr_mult:1  #weights
@@ -3511,8 +3506,7 @@ layer{
         convolution_param {
                 num_output: 255
                 pad: 1
-                kernel_h: 1
-                kernel_w: 1
+                kernel_size: 1
                 weight_filler {
                         type: "xavier"
                 }
@@ -3541,7 +3535,7 @@ layer{
         name: "bn81"
         type: "BatchNorm"
         bottom: "conv81"
-        top: "conv81"
+        top: "bn81"
 
 }
 
@@ -3563,7 +3557,7 @@ layer{
 layer{
         name: "conv84"
         type: "Convolution"
-        bottom: "conv79"
+        bottom: "bn79"
         top: "conv84"
         param {
                 lr_mult:1  #weights
@@ -3574,8 +3568,7 @@ layer{
         convolution_param {
                 num_output: 256
                 pad: 1
-                kernel_h: 1
-                kernel_w: 1
+                kernel_size: 1
                 weight_filler {
                         type: "xavier"
                 }
@@ -3604,7 +3597,7 @@ layer{
         name: "bn84"
         type: "BatchNorm"
         bottom: "conv84"
-        top: "conv84"
+        top: "bn84"
 
 }
 
@@ -3617,7 +3610,7 @@ layer{
 layer {
   name: "upsample85"
   type: "Deconvolution"
-  bottom: "conv84"
+  bottom: "bn84"
   top: "upsample85"
   param {
     lr_mult: 1
@@ -3639,10 +3632,10 @@ layer {
 # Route 85 61
 
 layer {
-  name: "concat"
+  name: "concat1"
   bottom: "upsample85"
-  bottom: "res98"
-  top: "out1"
+  bottom: "res61"
+  top: "concat1"
   type: "Concat"
   concat_param {
     axis: 1
@@ -3657,7 +3650,7 @@ layer {
 layer{
         name: "conv87"
         type: "Convolution"
-        bottom: "out1"
+        bottom: "concat1"
         top: "conv87"
         param {
                 lr_mult:1  #weights
@@ -3668,8 +3661,7 @@ layer{
         convolution_param {
                 num_output: 256
                 pad: 1
-                kernel_h: 1
-                kernel_w: 1
+                kernel_size: 1
                 weight_filler {
                         type: "xavier"
                 }
@@ -3698,7 +3690,7 @@ layer{
         name: "bn87"
         type: "BatchNorm"
         bottom: "conv87"
-        top: "conv87"
+        top: "bn87"
 
 }
 
@@ -3711,7 +3703,7 @@ layer{
 layer{
         name: "conv88"
         type: "Convolution"
-        bottom: "conv87"
+        bottom: "bn87"
         top: "conv88"
         param {
                 lr_mult:1  #weights
@@ -3722,8 +3714,7 @@ layer{
         convolution_param {
                 num_output: 512
                 pad: 1
-                kernel_h: 3
-                kernel_w: 3
+                kernel_size: 3
                 weight_filler {
                         type: "xavier"
                 }
@@ -3752,7 +3743,7 @@ layer{
         name: "bn88"
         type: "BatchNorm"
         bottom: "conv88"
-        top: "conv88"
+        top: "bn88"
 
 }
 
@@ -3765,7 +3756,7 @@ layer{
 layer{
         name: "conv89"
         type: "Convolution"
-        bottom: "conv88"
+        bottom: "bn88"
         top: "conv89"
         param {
                 lr_mult:1  #weights
@@ -3776,8 +3767,7 @@ layer{
         convolution_param {
                 num_output: 256
                 pad: 1
-                kernel_h: 1
-                kernel_w: 1
+                kernel_size: 1
                 weight_filler {
                         type: "xavier"
                 }
@@ -3806,7 +3796,7 @@ layer{
         name: "bn89"
         type: "BatchNorm"
         bottom: "conv89"
-        top: "conv89"
+        top: "bn89"
 
 }
 
@@ -3818,7 +3808,7 @@ layer{
 layer{
         name: "conv90"
         type: "Convolution"
-        bottom: "conv89"
+        bottom: "bn89"
         top: "conv90"
         param {
                 lr_mult:1  #weights
@@ -3829,8 +3819,7 @@ layer{
         convolution_param {
                 num_output: 512
                 pad: 1
-                kernel_h: 3
-                kernel_w: 3
+                kernel_size: 3
                 weight_filler {
                         type: "xavier"
                 }
@@ -3859,7 +3848,7 @@ layer{
         name: "bn90"
         type: "BatchNorm"
         bottom: "conv90"
-        top: "conv90"
+        top: "bn90"
 
 }
 ########################################
@@ -3870,7 +3859,7 @@ layer{
 layer{
         name: "conv91"
         type: "Convolution"
-        bottom: "conv90"
+        bottom: "bn90"
         top: "conv91"
         param {
                 lr_mult:1  #weights
@@ -3881,8 +3870,7 @@ layer{
         convolution_param {
                 num_output: 256
                 pad: 1
-                kernel_h: 1
-                kernel_w: 1
+                kernel_size: 1
                 weight_filler {
                         type: "xavier"
                 }
@@ -3911,7 +3899,7 @@ layer{
         name: "bn91"
         type: "BatchNorm"
         bottom: "conv91"
-        top: "conv91"
+        top: "bn91"
 
 }
 
@@ -3923,7 +3911,7 @@ layer{
 layer{
         name: "conv92"
         type: "Convolution"
-        bottom: "conv91"
+        bottom: "bn91"
         top: "conv92"
         param {
                 lr_mult:1  #weights
@@ -3934,8 +3922,7 @@ layer{
         convolution_param {
                 num_output: 512
                 pad: 1
-                kernel_h: 3
-                kernel_w: 3
+                kernel_size: 3
                 weight_filler {
                         type: "xavier"
                 }
@@ -3964,7 +3951,7 @@ layer{
         name: "bn92"
         type: "BatchNorm"
         bottom: "conv92"
-        top: "conv92"
+        top: "bn92"
 
 }
 ########################################
@@ -3975,7 +3962,7 @@ layer{
 layer{
         name: "conv93"
         type: "Convolution"
-        bottom: "conv92"
+        bottom: "bn92"
         top: "conv93"
         param {
                 lr_mult:1  #weights
@@ -3986,8 +3973,7 @@ layer{
         convolution_param {
                 num_output: 255
                 pad: 1
-                kernel_h: 1
-                kernel_w: 1
+                kernel_size: 1
                 weight_filler {
                         type: "xavier"
                 }
@@ -4016,7 +4002,7 @@ layer{
         name: "bn93"
         type: "BatchNorm"
         bottom: "conv93"
-        top: "conv93"
+        top: "bn93"
 
 }
 
@@ -4035,7 +4021,7 @@ layer{
 layer{
         name: "conv96"
         type: "Convolution"
-        bottom: "conv91"
+        bottom: "bn91"
         top: "conv96"
         param {
                 lr_mult:1  #weights
@@ -4046,8 +4032,7 @@ layer{
         convolution_param {
                 num_output: 128
                 pad: 1
-                kernel_h: 1
-                kernel_w: 1
+                kernel_size: 1
                 weight_filler {
                         type: "xavier"
                 }
@@ -4076,7 +4061,7 @@ layer{
         name: "bn96"
         type: "BatchNorm"
         bottom: "conv96"
-        top: "conv96"
+        top: "bn96"
 
 }
 
@@ -4089,7 +4074,7 @@ layer{
 layer {
   name: "upsample97"
   type: "Deconvolution"
-  bottom: "conv96"
+  bottom: "bn96"
   top: "upsample97"
   param {
     lr_mult: 1
@@ -4111,10 +4096,10 @@ layer {
 # Route 97 36
 
 layer {
-  name: "concat"
+  name: "concat2"
   bottom: "upsample97"
-  bottom: "res78"
-  top: "out2"
+  bottom: "res36"
+  top: "concat2"
   type: "Concat"
   concat_param {
     axis: 1
@@ -4129,7 +4114,7 @@ layer {
 layer{
         name: "conv99"
         type: "Convolution"
-        bottom: "out2"
+        bottom: "concat2"
         top: "conv99"
         param {
                 lr_mult:1  #weights
@@ -4140,8 +4125,7 @@ layer{
         convolution_param {
                 num_output: 128
                 pad: 1
-                kernel_h: 1
-                kernel_w: 1
+                kernel_size: 1
                 weight_filler {
                         type: "xavier"
                 }
@@ -4170,7 +4154,7 @@ layer{
         name: "bn99"
         type: "BatchNorm"
         bottom: "conv99"
-        top: "conv99"
+        top: "bn99"
 
 }
 
@@ -4183,7 +4167,7 @@ layer{
 layer{
         name: "conv100"
         type: "Convolution"
-        bottom: "conv99"
+        bottom: "bn99"
         top: "conv100"
         param {
                 lr_mult:1  #weights
@@ -4194,8 +4178,7 @@ layer{
         convolution_param {
                 num_output: 256
                 pad: 1
-                kernel_h: 3
-                kernel_w: 3
+                kernel_size: 3
                 weight_filler {
                         type: "xavier"
                 }
@@ -4224,7 +4207,7 @@ layer{
         name: "bn100"
         type: "BatchNorm"
         bottom: "conv100"
-        top: "conv100"
+        top: "bn100"
 
 }
 
@@ -4236,7 +4219,7 @@ layer{
 layer{
         name: "conv101"
         type: "Convolution"
-        bottom: "conv100"
+        bottom: "bn100"
         top: "conv101"
         param {
                 lr_mult:1  #weights
@@ -4247,8 +4230,7 @@ layer{
         convolution_param {
                 num_output: 128
                 pad: 1
-                kernel_h: 1
-                kernel_w: 1
+                kernel_weight: 1
                 weight_filler {
                         type: "xavier"
                 }
@@ -4277,7 +4259,7 @@ layer{
         name: "bn101"
         type: "BatchNorm"
         bottom: "conv101"
-        top: "conv101"
+        top: "bn101"
 
 }
 
@@ -4289,7 +4271,7 @@ layer{
 layer{
         name: "conv102"
         type: "Convolution"
-        bottom: "conv101"
+        bottom: "bn101"
         top: "conv102"
         param {
                 lr_mult:1  #weights
@@ -4300,8 +4282,7 @@ layer{
         convolution_param {
                 num_output: 256
                 pad: 1
-                kernel_h: 3
-                kernel_w: 3
+                kernel_size: 3
                 weight_filler {
                         type: "xavier"
                 }
@@ -4330,7 +4311,7 @@ layer{
         name: "bn102"
         type: "BatchNorm"
         bottom: "conv102"
-        top: "conv102"
+        top: "bn102"
 
 }
 ########################################
@@ -4341,7 +4322,7 @@ layer{
 layer{
         name: "conv103"
         type: "Convolution"
-        bottom: "conv102"
+        bottom: "bn102"
         top: "conv103"
         param {
                 lr_mult:1  #weights
@@ -4352,8 +4333,7 @@ layer{
         convolution_param {
                 num_output: 128
                 pad: 1
-                kernel_h: 1
-                kernel_w: 1
+                kernel_size: 1
                 weight_filler {
                         type: "xavier"
                 }
@@ -4382,7 +4362,7 @@ layer{
         name: "bn103"
         type: "BatchNorm"
         bottom: "conv103"
-        top: "conv103"
+        top: "bn103"
 
 }
 ########################################
@@ -4393,7 +4373,7 @@ layer{
 layer{
         name: "conv104"
         type: "Convolution"
-        bottom: "conv103"
+        bottom: "bn103"
         top: "conv104"
         param {
                 lr_mult:1  #weights
@@ -4404,8 +4384,7 @@ layer{
         convolution_param {
                 num_output: 256
                 pad: 1
-                kernel_h: 3
-                kernel_w: 3
+                kernel_size: 3
                 weight_filler {
                         type: "xavier"
                 }
@@ -4434,7 +4413,7 @@ layer{
         name: "bn104"
         type: "BatchNorm"
         bottom: "conv104"
-        top: "conv104"
+        top: "bn104"
 
 }
 
@@ -4447,7 +4426,7 @@ layer{
 layer{
         name: "conv105"
         type: "Convolution"
-        bottom: "conv104"
+        bottom: "bn104"
         top: "conv105"
         param {
                 lr_mult:1  #weights
@@ -4458,8 +4437,7 @@ layer{
         convolution_param {
                 num_output: 255
                 pad: 1
-                kernel_h: 1
-                kernel_w: 1
+                kernel_size: 1
                 weight_filler {
                         type: "xavier"
                 }
@@ -4488,7 +4466,7 @@ layer{
         name: "bn105"
         type: "BatchNorm"
         bottom: "conv105"
-        top: "conv105"
+        top: "bn105"
 
 }
 

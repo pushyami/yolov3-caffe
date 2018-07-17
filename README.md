@@ -8,10 +8,20 @@ Training on COCCO
 
 Dependencies:cython, coco API
 Installation Instructions for coco API:
+
+
 	git clone https://github.com/cocodataset/cocoapi.git
+	
+
 	cd coco/PythonAPI
+	
+
 	make
+	
+
 	sudo make install
+	
+
 	sudo python setup.py install
 
 

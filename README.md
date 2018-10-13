@@ -1,4 +1,4 @@
-#Yolov3 in caffe
+#Yolov3 in caffe: Work in Progress
 
 References for yolo architecture: https://blog.paperspace.com/how-to-implement-a-yolo-v3-object-detector-from-scratch-in-pytorch-part-2/
 
